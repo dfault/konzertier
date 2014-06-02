@@ -3,6 +3,8 @@ import requests
 import math
 import json
 import logging
+import string
+import os
 
 format_string = '%(levelname)s %(module)s.%(funcName)s [%(lineno)s]: %(message)s'
 logging.basicConfig(format=format_string)
@@ -83,7 +85,16 @@ def get_concerts(api, artist_name, geo_location, city, country):
     '''retrieve concerts from last.fm'''
     concerts = []
 
-    json_dict = api.request(artist_name)
+    json_dict = None
+    if os.path.isfile('./events/%s.json' % artist_name):
+        with open('./events/%s.json' % artist_name) as f:
+            json_dict = json.load(f)
+    else:
+        json_dict = api.request(artist_name)
+        valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
+        out_artistname = ''.join(c for c in artist_name if c in valid_chars)
+        with open('./events/%s.json' % out_artistname, 'wb') as f:
+            json.dump(json_dict, f)
 
     # check if any event was found
     if 'event' not in json_dict['events']:

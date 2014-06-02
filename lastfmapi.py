@@ -33,7 +33,7 @@ class LastFmApi(object):
         # send request to last.fm
         r = requests.get(self.full_url % (artist_name, API_KEY))
         if r.status_code != 200:
-            log.error('status %s' % r.status_code)
+            log.error('artist: %s, status %s' % (artist_name, r.status_code))
             return {'events': []}
  
         # check if artist is valid

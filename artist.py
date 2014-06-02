@@ -2,6 +2,7 @@ import os
 import mutagen.mp3
 import logging
 import json
+import codecs
 
 format_string = '%(levelname)s %(module)s.%(funcName)s [%(lineno)s]: %(message)s'
 logging.basicConfig(format=format_string)
@@ -15,7 +16,7 @@ def read_similar_artist_list(n_commons):
 
 def read_artist_list():
     out = []
-    with open('./artists_list.csv', 'rb') as f:
+    with codecs.open('./artists_list.csv', 'rb', 'utf8') as f:
         out = [line.rstrip() for line in f]
     return out
 

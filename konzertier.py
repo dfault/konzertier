@@ -12,10 +12,10 @@ logging.basicConfig(format=format_string)
 log = logging.getLogger(__name__)
 
 def get_events(opts):
-    artists = [] #artist.read_artist_list()
+    artists = artist.read_artist_list()
     # include similar artists
     similar_artists = artist.read_similar_artist_list(3)
-    artists.extend(similar_artists.keys())
+    artists.extend([s for s in similar_artists.keys() if s not in artists])
     api = lastfmapi.LastFmApi('getevents')
     concerts_dict = {}
     counter = 0
