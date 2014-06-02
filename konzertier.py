@@ -12,16 +12,22 @@ logging.basicConfig(format=format_string)
 log = logging.getLogger(__name__)
 
 def get_events(opts):
-    artists = artist.read_artist_list()
+    artists = [] #artist.read_artist_list()
+    # include similar artists
+    similar_artists = artist.read_similar_artist_list(3)
+    artists.extend(similar_artists.keys())
     api = lastfmapi.LastFmApi('getevents')
     concerts_dict = {}
     counter = 0
     for a in artists:
         concerts = concert.get_concerts(api, a, (opts.geo_lat, opts.geo_long), opts.city, opts.country)
+        similar = similar_artists.get(a,[])
         for c in concerts:
+            c.similar_artists = similar
             d = int(c.date.strftime("%Y%m%d"))
             concerts_dict.setdefault((d,a), []).append(c)
             counter += 1
+        # break if limit is exceeded
         if counter > opts.limit:
             break
 

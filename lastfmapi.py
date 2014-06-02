@@ -34,13 +34,13 @@ class LastFmApi(object):
         r = requests.get(self.full_url % (artist_name, API_KEY))
         if r.status_code != 200:
             log.error('status %s' % r.status_code)
-            return {}
+            return {'events': []}
  
         # check if artist is valid
         json_dict = r.json()
         if 'error' in json_dict:
             log.error('problem with artist %s: %s' % (artist_name, json_dict))
-            return {}
+            return {'events': []}
 
         return json_dict
 

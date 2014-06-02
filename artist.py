@@ -1,16 +1,23 @@
 import os
 import mutagen.mp3
 import logging
+import json
 
 format_string = '%(levelname)s %(module)s.%(funcName)s [%(lineno)s]: %(message)s'
 logging.basicConfig(format=format_string)
 log = logging.getLogger(__name__)
 
+def read_similar_artist_list(n_commons):
+    similar_artists = {}
+    with open('./similar_artists.json') as f:
+        similar_artists = json.load(f)
+    return {k:v for k,v in similar_artists.items() if len(v) > n_commons}
+
 def read_artist_list():
-    artists = []
+    out = []
     with open('./artists_list.csv', 'rb') as f:
-        artists = [line.rstrip() for line in f]
-    return artists
+        out = [line.rstrip() for line in f]
+    return out
 
 def get_artist_list(opts):
     '''return list of artists found in MP3 files at given path (recursively)'''

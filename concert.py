@@ -27,6 +27,7 @@ class Concert(object):
         self.title = event['title']
         self.description = event['description']
         self.artist_name = artist_name
+        self.similar_artists = []
         self.artist = event['artists']
         self.date = datetime.datetime.strptime(event['startDate'], '%a, %d %b %Y %H:%M:%S')
 
