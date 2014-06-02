@@ -3,18 +3,12 @@ import codecs
 
 # template of html document
 template_html = u'''
+<!DOCTYPE html>
     <html>
         <head>
+        <title>Konzertier</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style>
-        html *
-        {
-            font-size: 1em !important;
-            color: #000 !important;
-            font-family: Arial !important;
-        }
-        </style>
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
         <script>
         $(document).ready(function() {
@@ -42,6 +36,18 @@ template_html = u'''
         });
         </script>
         <style type="text/css">
+        td {
+            vertical-align:top
+        }
+        #td1 {
+            text-align:right
+        }
+        html *
+        {
+            font-size: 1em !important;
+            color: #000 !important;
+            font-family: Arial !important;
+        }
         .div1{
             height:20px;
             overflow:hidden; 
@@ -52,32 +58,31 @@ template_html = u'''
         <body>
             %(body)s
         </body>
-    <html>
+    </html>
     '''
 
 # template of concert html block
 template_entry = u'''
-      <table>
-        <td>
-          <table>
-            <tr>
-              <td><div class="div1" sim_band_height="%(sim_band_height)s">%(artist)s</div></td>
-            </tr>
-            <tr>
-              <td>%(venue_str)s</td>
-            </tr>
-            <tr>
-              <td>%(date)s</td>
-            </tr>
-          </table>
-        </td>   
-        <td valign="top">    
-          <a href="https://maps.google.com/?q=%(location_str)s">
-            <img src="%(venue_image_url)s" height="80px">
-          </a>
-        </td>   
-      </table>
-    <br>
+        <tr>
+          <td>
+            <table>
+              <tr>
+                <td><div class="div1" sim_band_height="%(sim_band_height)s">%(artist)s</div></td>
+              </tr>
+              <tr>
+                <td>%(venue_str)s</td>
+              </tr>
+              <tr>
+                <td>%(date)s</td>
+              </tr>
+            </table>
+          </td>   
+          <td class="td1">    
+            <a href="https://maps.google.com/?q=%(location_str)s">
+              <img src="%(venue_image_url)s" width=120 alt="%(venue_image_url)s">
+            </a>
+          </td>   
+        </tr>   
     '''
 
 def make_html(concerts_dict, out_filename):
@@ -91,8 +96,8 @@ def make_html(concerts_dict, out_filename):
             location_list = [c.venue_name, c.street, c.city, c.postalcode, c.country]
             for n in location_list:
                 if len(n) > 0:
-                    location_str_components.append(n)
-            location_str = u' '.join(location_str_components)
+                    location_str_components.append(n.replace(' ','%20'))
+            location_str = u'+'.join(location_str_components)
 
             # create venue string
             venue_str = u''
@@ -100,7 +105,7 @@ def make_html(concerts_dict, out_filename):
                 venue_str = u'%s<br>' % c.title
             venue_str += c.venue_name
 
-            venue_image_url = c.venue_image_url
+            venue_image_url = c.venue_image_url.replace(' ', '%20')
             if len(c.venue_image_url)==0:
                 venue_image_url = u'http://seitel.com/PublishingImages/google%20map%20icon.jpg'
 
@@ -110,11 +115,6 @@ def make_html(concerts_dict, out_filename):
                 artist_str += u'<br>' + u'<br>'.join(c.similar_artists)
 
             # fill entry template
-            print 'safsadfsadfsafsafasdfsadfsadfsadfadfasf'
-            print artist_str
-            print venue_str
-            print location_str
-            print venue_image_url
             entry = template_entry % {
                 'sim_band_height': 20*len(c.similar_artists),
                 'artist': artist_str,
@@ -126,7 +126,7 @@ def make_html(concerts_dict, out_filename):
             entries.append(entry)
 
     # create complete document
-    body = u'<br>\n'.join(entries)
+    body = u'<table>' + u'\n'.join(entries) + u'</table>'
     html_doc = template_html % {'body': body}
 
     # write document to file
