@@ -9,33 +9,17 @@ template_html = u'''
         <title>Konzertier</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script>
-        $(document).ready(function() {
-        
-          $(".div1").hover(
-            //on mouseover
-            function() {
-              $(this).animate({
-                //height: '+=250' //adds 250px
-                height: '+='+$(this).attr('sim_band_height')
-
-                }, 'fast' //sets animation speed to slow
-              );
-            },
-            //on mouseout
-            function() {
-              $(this).animate({
-                //height: '-=250px' //substracts 250px
-                height: '-='+$(this).attr('sim_band_height')
-                }, 'fast'
-              );
-            }
-          );
-        
-        });
+        $(function() {
+            $('.toggler').click(function() {
+                $(this).find('div').slideToggle();
+            });
+        }); 
         </script>
         <style type="text/css">
+        div.toggler { cursor:pointer; }
+        div.toggler div { display:none; }
         td {
             vertical-align:top
         }
@@ -47,11 +31,6 @@ template_html = u'''
             font-size: 1em !important;
             color: #000 !important;
             font-family: Arial !important;
-        }
-        .div1{
-            height:20px;
-            overflow:hidden; 
-            background: white; /* just for demo */
         }
         </style>
         </head>
@@ -67,7 +46,7 @@ template_entry = u'''
           <td>
             <table>
               <tr>
-                <td><div class="div1" sim_band_height="%(sim_band_height)s">%(artist)s</div></td>
+                <td><div class="toggler">%(artist)s</div></td>
               </tr>
               <tr>
                 <td>%(venue_str)s</td>
@@ -112,7 +91,7 @@ def make_html(concerts_dict, out_filename):
             # create artist string
             artist_str = '<b>'+c.artist_name+'</b>'
             if len(c.similar_artists) > 0:
-                artist_str += u'<br>' + u'<br>'.join(c.similar_artists)
+                artist_str += u'<div>' + u'<br>'.join(c.similar_artists) + u'</div>'
 
             # fill entry template
             entry = template_entry % {
